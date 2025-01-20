@@ -1,7 +1,5 @@
 import { getGlobalData } from '../../utils/global-data';
-import {
-  getPostBySlug,
-} from '../../utils/mdx-utils';
+import { getPostBySlug } from '../../utils/mdx-utils';
 
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
@@ -13,16 +11,14 @@ import Header from '../../components/Header';
 import Layout, { GradientBackground } from '../../components/Layout';
 import SEO from '../../components/SEO';
 
-
 const components = {
   a: CustomLink,
   Head,
 };
 
-export default function PostPage({
-  posts,
-  globalData,
-}) {
+export default function PostPage({ postByID, globalData }) {
+  const [posts] = postByID;
+
   return (
     <Layout>
       <SEO
@@ -40,10 +36,23 @@ export default function PostPage({
           )}
         </header>
         <main>
-          <article className="prose dark:prose-dark">
-            {posts.body}
-          </article>
+          <article className="prose dark:prose-dark">{posts.content}</article>
         </main>
+        <div className="my-6 flex justify-center gap-2">
+          <Link
+            className="py-6 lg:py-10 px-6 lg:px-16 block focus:outline-none focus:ring-4"
+            href="/"
+          >
+            <a className="uppercase mb-3 font-bold opacity-60">
+              Voltar para o Menu
+            </a>
+          </Link>
+          <Link href={'/'}>
+            <a>
+              <ArrowIcon />
+            </a>
+          </Link>
+        </div>
       </article>
       <Footer copyrightText={globalData.footerText} />
       <GradientBackground
@@ -60,14 +69,12 @@ export default function PostPage({
 
 export const getServerSideProps = async ({ params }) => {
   const globalData = getGlobalData();
-  const posts = await getPostBySlug(params.id);
- 
+  const postByID = await getPostBySlug(params.id);
 
   return {
     props: {
       globalData,
-      posts,
+      postByID,
     },
   };
 };
-
